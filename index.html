@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Referral System Client</title>
+  <!-- Include ethers.js from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+  <!-- Link to the app.js file -->
+  <script src="js/connectMM.js" defer></script>
+  <script src="js/refferalSystem.js" defer></script>
+  <script src="js/contract2.js"></script>
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <h1>Referral System Client</h1>
+  <!-- Button to connect wallet -->
+  <button id="connectWallet">Connect Wallet</button>
+  <div id="walletAddress"></div>
+  
+  <hr>
+
+  <!-- Section for generating referral link -->
+  <h2>Generate Referral Link</h2>
+  <button id="generateReferral">Generate Referral Link</button>
+  <div id="referralLink"></div>
+  
+  <hr>
+
+ <!-- Section for fetching the referral link via off-chain event -->
+ <h2>My Referral Link (Off-chain via Event)</h2>
+ <button id="getMyReferralEvent">Get My Referral via Event</button>
+ <div id="myReferralEvent"></div>
+
+<hr>
+
+  <!-- Section for registering with a referral -->
+  <h2>Register with Referral</h2>
+  <input type="text" id="referralUUID" placeholder="Enter Referral UUID (0x...)">
+  <button id="registerReferral">Register with Referral</button>
+  <div id="registrationStatus"></div>
+  
+  <hr>
+
+  <!-- Section to view the referrer (the referral the user used to register) -->
+  <h2>My Referrer</h2>
+  <button id="getMyReferrer">Get My Referrer</button>
+  <div id="myReferrer"></div>
+  
+  <hr>
+
+  <!-- Section to view all referrals (all users that registered using the current user's referral link) -->
+  <h2>My Referrals</h2>
+  <button id="getMyReferrals">Get My Referrals</button>
+  <div id="myReferrals"></div>
+</body>
+</html>

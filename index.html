@@ -7,8 +7,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
   <!-- Link to the app.js file -->
   <script src="js/connectMM.js" defer></script>
-  <script src="js/refferalSystem.js" defer></script>
-  <script src="js/contract2.js"></script>
+  <script src="js/loanM.js" defer></script>
+  <script src="js/referralSystem.js" defer></script>
   <script src="js/main.js" defer></script>
 </head>
 <body>
@@ -31,7 +31,7 @@
  <button id="getMyReferralEvent">Get My Referral via Event</button>
  <div id="myReferralEvent"></div>
 
-<hr>
+ <hr>
 
   <!-- Section for registering with a referral -->
   <h2>Register with Referral</h2>
@@ -52,5 +52,20 @@
   <h2>My Referrals</h2>
   <button id="getMyReferrals">Get My Referrals</button>
   <div id="myReferrals"></div>
+
+  <!-- Section to create Loan -->
+  <hr><hr><hr>
+<h2>Create Loan</h2>
+  <input type="text" id="collateralTokenDisplay" placeholder="ETH" readonly> 
+  <input type="hidden" id="collateralToken" value="0xE2FaF21D7F0CDAc37EB296B8a4B8246aa46C6f58"></input>
+  <input type="text" id="amountCollateralToken" placeholder="How much token you can use how collateral?">
+  <br></br>
+  <input type="label" id="loanTokenDisplay" placeholder="USDT" readonly>
+  <input type="hidden" id="loanToken" value="0x99c1960C59f005339BBbba168BCdC2ccaF2054b0"> 
+  <input type="text" id="amountLoanToken" placeholder="How much token you want?">
+  <br></br>
+  <button id="createLoan">Borrow</button>
+<div id="myCreateLoan"></div>
+
 </body>
 </html>

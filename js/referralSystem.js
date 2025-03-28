@@ -1,5 +1,5 @@
-const CONTRACT_ADDRESS = "0x1E125C10AA889D04Ee61fbcdA00Ed51c1d8BE926";
-const CONTRACT_ABI = [
+const CONTRACT_ADDRESS_REFERRALSYSTEM = "0x1E125C10AA889D04Ee61fbcdA00Ed51c1d8BE926";
+const CONTRACT_ABI_REFERRALSYSTEM = [
     "function generateReferralLink() external",
     "function registerWithReferral(bytes32 referralUUID) external",
     "function getMyReferrer() external view returns (address)",       // View function - no gas when called off-chain
@@ -11,20 +11,20 @@ const CONTRACT_ABI = [
 let referralSystemContract;
 
 // Initialize contract only when needed
-async function initializeContract() {
+async function initializeRefferralSystemContract() {
     const wallet = await WalletManager.getWallet();
     if (!wallet) return null;
     
     if (!referralSystemContract) {
         // Create contract instance with signer
-        referralSystemContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, wallet.signer);
+        referralSystemContract = new ethers.Contract(CONTRACT_ADDRESS_REFERRALSYSTEM, CONTRACT_ABI_REFERRALSYSTEM, wallet.signer);
     }
     return referralSystemContract;
 }
 
 // State-changing function - requires gas
 async function generateReferralLink() {
-    const contract = await initializeContract();
+    const contract = await initializeRefferralSystemContract();
     if (!contract) throw new Error("Wallet not connected");
     
     // Send transaction to create referral link (state-changing operation)
@@ -43,7 +43,7 @@ async function generateReferralLink() {
 
 // State-changing function - requires gas
 async function registerWithReferral(uuid) {
-    const contract = await initializeContract();
+    const contract = await initializeRefferralSystemContract();
     if (!contract) throw new Error("Wallet not connected");
     
     const tx = await contract.registerWithReferral(uuid);
@@ -52,7 +52,7 @@ async function registerWithReferral(uuid) {
 
 // View function - can be called off-chain without gas
 async function getMyReferrer() {
-    const contract = await initializeContract();
+    const contract = await initializeRefferralSystemContract();
     if (!contract) throw new Error("Wallet not connected");
     
     return contract.getMyReferrer();
@@ -60,7 +60,7 @@ async function getMyReferrer() {
 
 // View function - can be called off-chain without gas
 async function getMyReferrals() {
-    const contract = await initializeContract();
+    const contract = await initializeRefferralSystemContract();
     if (!contract) throw new Error("Wallet not connected");
     
     return contract.getMyReferrals();
@@ -68,7 +68,7 @@ async function getMyReferrals() {
 
 // Event reading - off-chain operation
 async function getReferralFromEvents() {
-    const contract = await initializeContract();
+    const contract = await initializeRefferralSystemContract();
     const wallet = await WalletManager.getWallet();
     
     // Filter events for current account

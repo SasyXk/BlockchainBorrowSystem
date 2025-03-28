@@ -1,3 +1,6 @@
+//console.log(window.LoanManager); 
+
+
 // Helper function for UI updates
 async function updateUI(elementId, content) {
     document.getElementById(elementId).innerText = content;
@@ -61,6 +64,25 @@ async function handleGetReferralEvent() {
     }
 }
 
+async function handleCreateLoan() {
+    try {
+        console.log("Work?");
+        const collateralToken = document.getElementById("collateralToken").value;
+        const amountCollateralToken = document.getElementById("amountCollateralToken").value;
+        const loanToken = document.getElementById("loanToken").value;
+        const amountLoanToken = document.getElementById("amountLoanToken").value;
+        const resutl = await LoanM.createLoan(collateralToken,amountCollateralToken,loanToken,amountLoanToken);
+        //const referrer = await ReferralSystem.getMyReferrer();
+        //alert(collateralToken +" " + loanToken + " " + amountLoanToken);
+        //updateUI("myReferralEvent", uuid || "No referral link found");
+        updateUI("myCreateLoan", resutl);
+    } catch (error) {
+        console.log(error);
+        //updateUI("myCreateLoan", `Error: {${error.message}}`);
+        updateUI("myCreateLoan", `Error: {${error.reason || error.message}}`);
+    }
+}
+
 // Initialize event listeners
 window.addEventListener("DOMContentLoaded", () => {
     // Wallet connection handler
@@ -76,4 +98,6 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("getMyReferrer").addEventListener("click", handleGetReferrer);
     document.getElementById("getMyReferrals").addEventListener("click", handleGetReferrals);
     document.getElementById("getMyReferralEvent").addEventListener("click", handleGetReferralEvent);
+    document.getElementById("createLoan").addEventListener("click", handleCreateLoan);
+   
 });

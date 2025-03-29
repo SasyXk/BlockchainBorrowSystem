@@ -117,6 +117,80 @@ async function createLoan(collateralToken,amountCollateralToken,loanToken,amount
     return receipt;
 }
 
+
+async function getTokenSymbol(tokenAddress) {
+
+    if (!ethers.utils.isAddress(tokenAddress)) {
+        console.error("Invalid token address:", tokenAddress);
+        return "Unknown"; 
+    }
+
+    const wallet = await WalletManager.getWallet();
+    if (!wallet) throw new Error("Wallet not connected");
+
+    const erc20Interface = new ethers.utils.Interface([
+        "function symbol() view returns (string)"
+    ]);
+
+    const contract = new ethers.Contract(tokenAddress, erc20Interface, wallet.provider);
+
+    try {
+        const symbol = await contract.symbol();
+        console.log("Token Symbol:", symbol);  // Debug
+        return symbol;
+    } catch (error) {
+        console.error("Error getting token symbol:", error);
+        return "Unknown"; 
+    }
+}
+
+
+async function getActiveLoan() {
+    const contract = await initializeLoanManagerContract();
+    if (!contract) throw new Error("Wallet not connected");
+
+    const wallet = await WalletManager.getWallet();
+    let loan = await contract.loans(wallet.account);
+
+    // If there is no active loan, the loanToken address is zero
+    if (loan.loanToken === ethers.constants.AddressZero) {
+        return null;
+    }
+    const collateralDecimals = await getDecimals(loan.collateralToken);
+    const loanDecimals = await getDecimals(loan.loanToken);
+    console.log(collateralDecimals + " " + loanDecimals);
+    loan.collateralAmount = ethers.utils.formatUnits(loan.collateralAmount, collateralDecimals)
+    loan.loanAmount = ethers.utils.formatUnits(loan.loanAmount, loanDecimals)
+    console.log(`
+        Loan details for account ${wallet.account}:
+        Collateral Token Address: ${loan.collateralToken}
+        Loan Token Address: ${loan.loanToken}
+        Collateral Amount: ${loan.collateralAmount ? ethers.utils.formatUnits(loan.collateralAmount, collateralDecimals) : 'N/A'} (scaled to token decimals)
+        Loan Amount: ${loan.loanAmount ? ethers.utils.formatUnits(loan.loanAmount, loanDecimals) : 'N/A'} (scaled to token decimals)
+        Total Owed: ${loan.totalOwed ? ethers.utils.formatUnits(loan.totalOwed, loanDecimals) : 'N/A'} (scaled to token decimals)
+        Repaid Amount: ${loan.repaidAmount ? ethers.utils.formatUnits(loan.repaidAmount, loanDecimals) : 'N/A'} (scaled to token decimals)
+        Loan ID: ${loan.idLoan || 'N/A'}
+        Collateral Value: ${loan.collateralValue ? ethers.utils.formatUnits(loan.collateralValue, collateralDecimals) : 'N/A'} (scaled to token decimals)
+        Is Repaid: ${loan.isRepaid ? "Yes" : "No"}
+    `);
+    
+    //console.log("Loan details:", loan);
+
+
+    return loan;
+}
+
+
+async function repayLoan() {
+    const contract = await initializeLoanManagerContract();
+    if (!contract) throw new Error("Wallet not connected");
+
+    console.log("repayLoan()");
+    return "ss";
+}
+
 window.LoanM = {
-    createLoan
+    createLoan,
+    getActiveLoan,
+    repayLoan
 };

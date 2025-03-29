@@ -83,6 +83,54 @@ async function handleCreateLoan() {
     }
 }
 
+// Function that updates the UI for repayment, reading the active loan and configuring the slider
+async function updateRepayLoanUI() {
+    console.log("HHHH");
+    try {
+      const loan = await LoanM.getActiveLoan();
+      if (!loan) {
+        document.getElementById("repayLoanContainer").style.display = "none";
+        updateUI("MyrepayLoan", "No active loan found");
+        return;
+      }
+      const remainingDebtScaled = loan.totalOwed.sub(loan.repaidAmount);
+      
+      const loanDecimals = await getDecimals(loan.loanToken);
+      const remainingDebt = parseFloat(ethers.utils.formatUnits(remainingDebtScaled, loanDecimals));
+      document.getElementById("remainingDebtDisplay").innerText = 
+                              `Remaining Debt: ${remainingDebt} ${await getTokenSymbol(loan.loanToken)}`;
+  
+      //Slider configuartion
+      const slider = document.getElementById("repaySlider");
+      slider.min = 0;
+      slider.max = remainingDebt;
+      slider.step = remainingDebt / 100;
+      slider.value = slider.min; // valore iniziale
+  
+      document.getElementById("repayValue").innerText = slider.value;
+  
+      slider.addEventListener("input", (event) => {
+        document.getElementById("repayValue").innerText = event.target.value;
+      });
+    } catch (error) {
+      console.error("Error updating repay loan UI:", error);
+      updateUI("MyrepayLoan", `Error: ${error.message}`);
+    }
+  }
+
+  async function handleRepayLoan() {
+    try {
+        const repayAmount = document.getElementById("repaySlider").value;
+        // Converti repayAmount nel formato richiesto (ad esempio con ethers.utils.parseUnits)
+        // Esegui la funzione di rimborso dal file LoanM.js (da implementare)
+        const result = await LoanM.repayLoan(repayAmount);
+        updateUI("MyrepayLoan", result);
+      } catch (error) {
+        console.error("Repay loan error:", error);
+        updateUI("MyrepayLoan", `Error: ${error.message}`);
+      }
+  }
+  
 // Initialize event listeners
 window.addEventListener("DOMContentLoaded", () => {
     // Wallet connection handler
@@ -99,5 +147,7 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("getMyReferrals").addEventListener("click", handleGetReferrals);
     document.getElementById("getMyReferralEvent").addEventListener("click", handleGetReferralEvent);
     document.getElementById("createLoan").addEventListener("click", handleCreateLoan);
+    document.getElementById("repayLoan").addEventListener("click", handleRepayLoan);
    
+    updateRepayLoanUI();
 });

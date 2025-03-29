@@ -75,6 +75,7 @@ async function handleCreateLoan() {
         //const referrer = await ReferralSystem.getMyReferrer();
         //alert(collateralToken +" " + loanToken + " " + amountLoanToken);
         //updateUI("myReferralEvent", uuid || "No referral link found");
+        await updateRepayLoanUI()
         updateUI("myCreateLoan", resutl);
     } catch (error) {
         console.log(error);
@@ -105,7 +106,7 @@ async function updateRepayLoanUI() {
       slider.min = 0;
       slider.max = remainingDebt;
       slider.step = remainingDebt / 100;
-      slider.value = slider.min; // valore iniziale
+      slider.value = slider.min;
   
       document.getElementById("repayValue").innerText = slider.value;
   
@@ -114,20 +115,19 @@ async function updateRepayLoanUI() {
       });
     } catch (error) {
       console.error("Error updating repay loan UI:", error);
-      updateUI("MyrepayLoan", `Error: ${error.message}`);
+      updateUI("MyrepayLoan", `Error: {${error.reason || error.message}}`);
     }
   }
 
   async function handleRepayLoan() {
     try {
         const repayAmount = document.getElementById("repaySlider").value;
-        // Converti repayAmount nel formato richiesto (ad esempio con ethers.utils.parseUnits)
-        // Esegui la funzione di rimborso dal file LoanM.js (da implementare)
         const result = await LoanM.repayLoan(repayAmount);
+        await updateRepayLoanUI()
         updateUI("MyrepayLoan", result);
       } catch (error) {
         console.error("Repay loan error:", error);
-        updateUI("MyrepayLoan", `Error: ${error.message}`);
+        updateUI("MyrepayLoan", `Error: {${error.reason || error.message}}`);
       }
   }
   

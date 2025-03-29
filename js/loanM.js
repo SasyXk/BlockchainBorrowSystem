@@ -81,7 +81,6 @@ async function getAllowance(tokenAddress, owner, spender) {
     return allowance;
 }
 
-
 async function createLoan(collateralToken,amountCollateralToken,loanToken,amountLoanToken) {
     const contract = await initializeLoanManagerContract();
     if (!contract) throw new Error("Wallet not connected");
@@ -117,7 +116,6 @@ async function createLoan(collateralToken,amountCollateralToken,loanToken,amount
     return receipt;
 }
 
-
 async function getTokenSymbol(tokenAddress) {
 
     if (!ethers.utils.isAddress(tokenAddress)) {
@@ -143,7 +141,6 @@ async function getTokenSymbol(tokenAddress) {
         return "Unknown"; 
     }
 }
-
 
 async function getActiveLoan() {
     const contract = await initializeLoanManagerContract();
@@ -176,17 +173,26 @@ async function getActiveLoan() {
     
     //console.log("Loan details:", loan);
 
-
     return loan;
 }
 
-
-async function repayLoan() {
+async function repayLoan(repayAmount) {
     const contract = await initializeLoanManagerContract();
     if (!contract) throw new Error("Wallet not connected");
 
-    console.log("repayLoan()");
-    return "ss";
+    if (repayAmount <= 0) {
+        throw new Error("Invalid input: loan amount must be greater than zero.");
+    }
+
+    const loan = await LoanM.getActiveLoan();
+    const loanDecimals = await getDecimals(loan.loanToken);
+    repayAmountScaled = ethers.utils.parseUnits(repayAmount.toString(), loanDecimals);
+
+    const tx = await contract.repayLoan(repayAmountScaled);
+    const receipt = await tx.wait();
+    console.log("repayLoan(): amount " + repayAmountScaled);
+
+    return receipt;
 }
 
 window.LoanM = {

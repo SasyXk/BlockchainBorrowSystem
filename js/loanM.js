@@ -55,6 +55,33 @@ async function getDecimals(tokenAddress) {
     return decimals;
 }
 
+async function approveToken(tokenAddress, spender, amount) {
+    const wallet = await WalletManager.getWallet();
+    const approveInterface = new ethers.utils.Interface(["function approve(address spender, uint256 amount) returns (bool)"]);
+
+    const tx = await wallet.signer.sendTransaction({
+        to: tokenAddress,
+        data: approveInterface.encodeFunctionData("approve", [spender, amount])
+    });
+
+    await tx.wait();
+    return tx;
+}
+
+async function getAllowance(tokenAddress, owner, spender) {
+    const wallet = await WalletManager.getWallet();
+    const allowanceInterface = new ethers.utils.Interface(["function allowance(address owner, address spender) view returns (uint256)"]);
+
+    const allowanceData = await wallet.provider.call({
+        to: tokenAddress,
+        data: allowanceInterface.encodeFunctionData("allowance", [owner, spender])
+    });
+
+    const allowance = allowanceInterface.decodeFunctionResult("allowance", allowanceData)[0];
+    return allowance;
+}
+
+
 async function createLoan(collateralToken,amountCollateralToken,loanToken,amountLoanToken) {
     const contract = await initializeLoanManagerContract();
     if (!contract) throw new Error("Wallet not connected");
@@ -74,6 +101,16 @@ async function createLoan(collateralToken,amountCollateralToken,loanToken,amount
     collateralAmountScaled = ethers.utils.parseUnits(amountCollateralToken.toString(), collateralDecimals);
     loanAmountScaled = ethers.utils.parseUnits(amountLoanToken.toString(), loanDecimals);
 
+
+    const wallet = await WalletManager.getWallet();
+    const allowance = await getAllowance(collateralToken, wallet.account, contract.address);
+
+    console.log('Allowance:', allowance.toString());
+    console.log('Collateral Amount Scaled:', collateralAmountScaled.toString());
+
+    if (allowance.lt(collateralAmountScaled)) { //less than
+        await approveToken(collateralToken, contract.address, collateralAmountScaled);
+    }
     const tx = await contract.createLoan(collateralToken,collateralAmountScaled,loanToken,loanAmountScaled);
     const receipt = await tx.wait();
     

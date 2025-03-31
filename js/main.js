@@ -134,7 +134,11 @@ async function handleRepayLoan() {
 
 async function handleCreateLiquidLoan(){
     try{
-        const activeLoan = LoanM.getActiveLoans();
+        const activeLoan = await LoanM.getActiveLoans();
+        console.log("ACTIVE LOAN:");
+        console.log(activeLoan);
+        console.log("FINISH");
+
     } catch (error) {
         console.error("handleCreateLiquidLoan:", error);
         //updateUI("MyrepayLoan", `Error: {${error.reason || error.message}}`);
@@ -154,6 +158,7 @@ async function handleCreateLiquidLoan(){
     document.getElementById("repayLoan").addEventListener("click", handleRepayLoan);
    
     updateRepayLoanUI();
+    handleCreateLiquidLoan();
   }
 
   async function handleWalletConnect() {

@@ -158,7 +158,7 @@ async function getActiveLoan(address) {
     loan.collateralAmount = ethers.utils.formatUnits(loan.collateralAmount, collateralDecimals)
     loan.loanAmount = ethers.utils.formatUnits(loan.loanAmount, loanDecimals)
     console.log(`
-        Loan details for account ${wallet.account}:
+        Loan details for account ${address}:
         Collateral Token Address: ${loan.collateralToken}
         Loan Token Address: ${loan.loanToken}
         Collateral Amount: ${loan.collateralAmount ? ethers.utils.formatUnits(loan.collateralAmount, collateralDecimals) : 'N/A'} (scaled to token decimals)
@@ -201,6 +201,18 @@ async function repayLoan(repayAmount) {
 async function getActiveLoans() {
     const contract = await initializeLoanManagerContract();
     if (!contract) throw new Error("Wallet not connected");
+
+    const uniqueBorrowers = [...new Set(
+        (await contract.queryFilter(contract.filters.LoanCreated()))
+        .map(e => e.args.borrower))];
+    let activeLoans  = [];
+    for (const borrower of uniqueBorrowers) {
+        const loan = await getActiveLoan(borrower);
+        if(loan !== null){
+            activeLoans .push(loan);
+        }
+    }
+    return activeLoans;
 }
 
 window.LoanM = {

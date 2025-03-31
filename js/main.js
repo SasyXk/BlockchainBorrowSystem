@@ -148,7 +148,10 @@ async function handleCreateLiquidLoan(){
         }
         activeLoans.forEach(async (loan, index) => {
             const card = document.createElement('div');
-            
+            card.style.border = '1px solid #ccc';
+            card.style.margin = '10px 0';
+            card.style.padding = '10px';
+
             const loanDecimals = await getDecimals(loan.loanToken);
             const collateralDecimals = await getDecimals(loan.collateralToken);
 
@@ -158,13 +161,22 @@ async function handleCreateLiquidLoan(){
             const collateralSymbol = await getTokenSymbol(loan.collateralToken)
             const loanSymbol = await getTokenSymbol(loan.loanToken)
             card.innerHTML = `
-                <h3>Loan #${loan.idLoan.toString()}</h3>
-                <p><strong>Borrower:</strong> ${loan.borrower}</p>
-                <p><strong>Collateral:</strong> ${collateralAmount} ${collateralSymbol}</p>
-                <p><strong>Loan Amount:</strong> ${loanAmount} ${loanSymbol}</p>
-                <p><strong>Remaining Debt:</strong> ${remainingDebt} ${loanSymbol}</p>
-                <p><strong>Status:</strong> ${loan.isRepaid ? 'Repaid' : 'Active'}</p>
-                <button id="liquidate-btn-${index}" data-borrower="${loan.borrower}">Liquided
+                <div style="display: block; margin-bottom: 8px;">
+                    <h3 style="margin: 0 0 5px 0;">Loan #${loan.idLoan.toString()}</h3>
+                    <div><strong>Borrower:</strong> ${loan.borrower}</div>
+                    <div><strong>Collateral:</strong> ${collateralAmount} ${collateralSymbol}</div>
+                    <div><strong>Loan Amount:</strong> ${loanAmount} ${loanSymbol}</div>
+                    <div><strong>Remaining Debt:</strong> ${remainingDebt} ${loanSymbol}</div>
+                    <div><strong>Status:</strong> ${loan.isRepaid ? 'Repaid' : 'Active'}</div>
+                </div>
+                <button 
+                    id="liquidate-btn-${index}" 
+                    data-borrower="${loan.borrower}"
+                    style="margin-top: 10px; padding: 5px 10px;"
+                >
+                    Liquidate
+                </button>
+                <hr style="margin: 15px 0 10px 0;">
             `;
             container.appendChild(card);
 

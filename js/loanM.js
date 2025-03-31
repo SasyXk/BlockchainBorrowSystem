@@ -222,7 +222,28 @@ async function getActiveLoans() {
 
 async function liquidateLoan(address) {
     console.log(address);
-    return;
+    const contract = await initializeLoanManagerContract();
+    if (!contract) throw new Error("Wallet not connected");
+
+    const loan = await getActiveLoan(address);
+
+    const loanDecimals = await getDecimals(loan.loanToken);
+
+    loanAmountScaled = ethers.utils.parseUnits((loan.totalOwed - loan.repaidAmount).toString(), loanDecimals);
+
+    const wallet = await WalletManager.getWallet();
+    const allowance = await getAllowance(loan.loanToken, wallet.account, contract.address);
+
+    console.log('Allowance:', allowance.toString());
+    console.log('Loan Amount Scaled:', loanAmountScaled.toString());
+
+    if (allowance.lt(loanAmountScaled)) { //less than
+        await approveToken(loan.loanToken, contract.address, loanAmountScaled);
+    }
+    const tx = await contract.liquidateLoan(address);
+    const receipt = await tx.wait();
+    
+    return receipt;
 }
 
 window.LoanM = {

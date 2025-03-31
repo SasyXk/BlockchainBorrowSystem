@@ -1,5 +1,5 @@
-//console.log(window.LoanManager); 
-
+document.getElementById("referralSystemContainer").style.display = "none";
+document.getElementById("loanManagerContainer").style.display = "none";
 
 // Helper function for UI updates
 async function updateUI(elementId, content) {
@@ -66,7 +66,6 @@ async function handleGetReferralEvent() {
 
 async function handleCreateLoan() {
     try {
-        console.log("Work?");
         const collateralToken = document.getElementById("collateralToken").value;
         const amountCollateralToken = document.getElementById("amountCollateralToken").value;
         const loanToken = document.getElementById("loanToken").value;
@@ -86,7 +85,6 @@ async function handleCreateLoan() {
 
 // Function that updates the UI for repayment, reading the active loan and configuring the slider
 async function updateRepayLoanUI() {
-    console.log("HHHH");
     try {
       const loan = await LoanM.getActiveLoan();
       if (!loan) {
@@ -119,7 +117,7 @@ async function updateRepayLoanUI() {
     }
   }
 
-  async function handleRepayLoan() {
+async function handleRepayLoan() {
     try {
         const repayAmount = document.getElementById("repaySlider").value;
         const result = await LoanM.repayLoan(repayAmount);
@@ -130,17 +128,12 @@ async function updateRepayLoanUI() {
         updateUI("MyrepayLoan", `Error: {${error.reason || error.message}}`);
       }
   }
-  
-// Initialize event listeners
-window.addEventListener("DOMContentLoaded", () => {
-    // Wallet connection handler
-    document.getElementById("connectWallet").addEventListener("click", () => {
-        WalletManager.getWallet().then(wallet => {
-            if (wallet) updateUI("walletAddress", `Connected: ${wallet.account}`);
-        });
-    });
 
+
+  function initializeApp(){
     // Assign handlers to UI elements
+    document.getElementById("referralSystemContainer").style.display = "block";
+    document.getElementById("loanManagerContainer").style.display = "block";
     document.getElementById("generateReferral").addEventListener("click", handleGenerateReferral);
     document.getElementById("registerReferral").addEventListener("click", handleRegister);
     document.getElementById("getMyReferrer").addEventListener("click", handleGetReferrer);
@@ -150,4 +143,19 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("repayLoan").addEventListener("click", handleRepayLoan);
    
     updateRepayLoanUI();
+  }
+
+  async function handleWalletConnect() {
+    WalletManager.getWallet().then(wallet => {
+        if (wallet) {
+            updateUI("walletAddress", `Connected: ${wallet.account}`);
+            initializeApp();
+        }
+    });
+  }
+  
+// Initialize event listeners
+window.addEventListener("DOMContentLoaded", () => {
+    // Wallet connection handler
+    document.getElementById("connectWallet").addEventListener("click", handleWalletConnect);
 });

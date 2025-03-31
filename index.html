@@ -69,20 +69,7 @@
 
   <hr>
 
-  <!-- Section to repay Loan 
-  
-  <h2>Repay Loan</h2>
-    <input type="text" id="collateralTokenDisplayR" placeholder="ETH" readonly> 
-    <input type="hidden" id="collateralTokenR" value="0xE2FaF21D7F0CDAc37EB296B8a4B8246aa46C6f58"></input>
-    <input type="text" id="amountCollateralTokenR" placeholder="How much token you can use how collateral?">
-    <br></br>
-    <input type="label" id="loanTokenDisplayR" placeholder="USDT" readonly>
-    <input type="hidden" id="loanTokenR" value="0x99c1960C59f005339BBbba168BCdC2ccaF2054b0"> 
-    <input type="text" id="amountLoanTokenR" placeholder="How much token you want?">
-    <br></br>
-    <button id="repayLoan">Repay</button>
-  <div id="MyrepayLoan"></div>
--->
+  <!-- Section to repay Loan -->
 <h2>Repay Loan</h2>
 <div id="repayLoanContainer">
   <div>
@@ -98,19 +85,19 @@
     <input type="hidden" id="loanTokenR" value="0x99c1960C59f005339BBbba168BCdC2ccaF2054b0">
   </div>
   
-  <!-- Section to display the remaining debt (will be updated by JS) -->
+  <!-- Section to display the remaining debt -->
   <div>
     <p id="remainingDebtDisplay">Remaining Debt: --</p>
   </div>
   
-  <!-- Sezione slider per scegliere l'importo da rimborsare -->
+ <!-- Slider section to choose the amount to be refunded -->
   <div>
     <label for="repaySlider">Select repayment amount:</label>
     <input type="range" id="repaySlider" min="0.01" max="100" step="0.01">
     <span id="repayValue">0.01</span>
   </div>
   
-  <!-- Bottone per inviare il rimborso -->
+  <!-- Button to send Repay -->
   <div>
     <button id="repayLoan">Repay</button>
   </div>

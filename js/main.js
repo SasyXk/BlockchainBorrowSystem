@@ -75,7 +75,8 @@ async function handleCreateLoan() {
         //const referrer = await ReferralSystem.getMyReferrer();
         //alert(collateralToken +" " + loanToken + " " + amountLoanToken);
         //updateUI("myReferralEvent", uuid || "No referral link found");
-        await updateRepayLoanUI()
+        await updateRepayLoanUI();
+        await handleCreateLiquidLoan();
         updateUI("myCreateLoan", resutl);
     } catch (error) {
         console.log(error);
@@ -124,7 +125,8 @@ async function handleRepayLoan() {
     try {
         const repayAmount = document.getElementById("repaySlider").value;
         const result = await LoanM.repayLoan(repayAmount);
-        await updateRepayLoanUI()
+        await updateRepayLoanUI();
+        await handleCreateLiquidLoan();
         updateUI("MyrepayLoan", result);
     } catch (error) {
     console.error("Repay loan error:", error);
@@ -134,15 +136,61 @@ async function handleRepayLoan() {
 
 async function handleCreateLiquidLoan(){
     try{
-        const activeLoan = await LoanM.getActiveLoans();
+        const activeLoans = await LoanM.getActiveLoans();
         console.log("ACTIVE LOAN:");
-        console.log(activeLoan);
+        console.log(activeLoans);
         console.log("FINISH");
+        const container = document.getElementById('liquidLoanContainer');
+        container.innerHTML = '';
+        if (activeLoans.length === 0) {
+            container.innerHTML = '<p>No active loans found</p>';
+            return;
+        }
+        activeLoans.forEach(async (loan, index) => {
+            const card = document.createElement('div');
+            
+            const loanDecimals = await getDecimals(loan.loanToken);
+            const collateralDecimals = await getDecimals(loan.collateralToken);
 
+            const collateralAmount = ethers.utils.formatUnits(loan.collateralAmount, collateralDecimals);
+            const loanAmount = ethers.utils.formatUnits(loan.loanAmount, loanDecimals);
+            const remainingDebt = ethers.utils.formatUnits(loan.totalOwed.sub(loan.repaidAmount), loanDecimals);
+            const collateralSymbol = await getTokenSymbol(loan.collateralToken)
+            const loanSymbol = await getTokenSymbol(loan.loanToken)
+            card.innerHTML = `
+                <h3>Loan #${loan.idLoan.toString()}</h3>
+                <p><strong>Borrower:</strong> ${loan.borrower}</p>
+                <p><strong>Collateral:</strong> ${collateralAmount} ${collateralSymbol}</p>
+                <p><strong>Loan Amount:</strong> ${loanAmount} ${loanSymbol}</p>
+                <p><strong>Remaining Debt:</strong> ${remainingDebt} ${loanSymbol}</p>
+                <p><strong>Status:</strong> ${loan.isRepaid ? 'Repaid' : 'Active'}</p>
+                <button id="liquidate-btn-${index}" data-borrower="${loan.borrower}">Liquided
+            `;
+            container.appendChild(card);
+
+            document.getElementById(`liquidate-btn-${index}`).addEventListener('click', (e) => {
+                const borrower = e.target.getAttribute('data-borrower');
+                handleLiquidateLoan(borrower);
+            });
+        });
     } catch (error) {
         console.error("handleCreateLiquidLoan:", error);
-        //updateUI("MyrepayLoan", `Error: {${error.reason || error.message}}`);
+        container.innerHTML = `<p>Error: {${error.reason || error.message}}}</p>`;
     } 
+}
+
+async function handleLiquidateLoan(borrowerAddress) {
+    try {
+        console.log(`Liquidating loan ${borrowerAddress}`);
+        await LoanM.liquidateLoan(borrowerAddress);
+
+        await updateRepayLoanUI();
+        await handleCreateLiquidLoan();
+        
+    } catch (error) {
+        console.error("Liquidation failed:", error);
+        alert(`Liquidation failed: ${error.reason || error.message}`);
+    }
 }
 
   function initializeApp(){

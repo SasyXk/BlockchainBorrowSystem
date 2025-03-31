@@ -209,15 +209,26 @@ async function getActiveLoans() {
     for (const borrower of uniqueBorrowers) {
         const loan = await getActiveLoan(borrower);
         if(loan !== null){
-            activeLoans .push(loan);
+            const formattedLoan = {
+                borrower: borrower,
+                ...loan,
+            };
+            activeLoans.push(formattedLoan);
         }
     }
     return activeLoans;
+}
+
+
+async function liquidateLoan(address) {
+    console.log(address);
+    return;
 }
 
 window.LoanM = {
     createLoan,
     getActiveLoan,
     repayLoan,
-    getActiveLoans
+    getActiveLoans,
+    liquidateLoan
 };

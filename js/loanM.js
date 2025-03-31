@@ -142,13 +142,12 @@ async function getTokenSymbol(tokenAddress) {
     }
 }
 
-async function getActiveLoan() {
+async function getActiveLoan(address) {
     const contract = await initializeLoanManagerContract();
     if (!contract) throw new Error("Wallet not connected");
 
-    const wallet = await WalletManager.getWallet();
-    let loan = await contract.loans(wallet.account);
-
+    let loan = await contract.loans(address);
+// wallet.account
     // If there is no active loan, the loanToken address is zero
     if (loan.loanToken === ethers.constants.AddressZero) {
         return null;
@@ -183,8 +182,11 @@ async function repayLoan(repayAmount) {
     if (repayAmount <= 0) {
         throw new Error("Invalid input: loan amount must be greater than zero.");
     }
-
-    const loan = await LoanM.getActiveLoan();
+    const wallet = await WalletManager.getWallet();
+    const loan = await LoanM.getActiveLoan(wallet.account);
+    if (loan.loanToken === ethers.constants.AddressZero) {
+        throw new Error("Invalid token address: The loan is no longer available");
+    }
     const loanDecimals = await getDecimals(loan.loanToken);
     repayAmountScaled = ethers.utils.parseUnits(repayAmount.toString(), loanDecimals);
 
@@ -195,8 +197,15 @@ async function repayLoan(repayAmount) {
     return receipt;
 }
 
+
+async function getActiveLoans() {
+    const contract = await initializeLoanManagerContract();
+    if (!contract) throw new Error("Wallet not connected");
+}
+
 window.LoanM = {
     createLoan,
     getActiveLoan,
-    repayLoan
+    repayLoan,
+    getActiveLoans
 };

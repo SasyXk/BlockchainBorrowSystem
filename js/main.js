@@ -87,8 +87,9 @@ async function handleCreateLoan() {
 // Function that updates the UI for repayment, reading the active loan and configuring the slider
 async function updateRepayLoanUI() {
     try {
-      const loan = await LoanM.getActiveLoan();
-      if (!loan) {
+      const wallet = await WalletManager.getWallet();
+      const loan = await LoanM.getActiveLoan(wallet.account);
+      if (!loan || loan.loanToken === ethers.constants.AddressZero) {
         document.getElementById("repayLoanContainer").style.display = "none";
         updateUI("MyrepayLoan", "No active loan found");
         return;
@@ -125,12 +126,20 @@ async function handleRepayLoan() {
         const result = await LoanM.repayLoan(repayAmount);
         await updateRepayLoanUI()
         updateUI("MyrepayLoan", result);
-      } catch (error) {
-        console.error("Repay loan error:", error);
-        updateUI("MyrepayLoan", `Error: {${error.reason || error.message}}`);
-      }
-  }
+    } catch (error) {
+    console.error("Repay loan error:", error);
+    updateUI("MyrepayLoan", `Error: {${error.reason || error.message}}`);
+    }
+}
 
+async function handleCreateLiquidLoan(){
+    try{
+        const activeLoan = LoanM.getActiveLoans();
+    } catch (error) {
+        console.error("handleCreateLiquidLoan:", error);
+        //updateUI("MyrepayLoan", `Error: {${error.reason || error.message}}`);
+    } 
+}
 
   function initializeApp(){
     // Assign handlers to UI elements

@@ -1,5 +1,6 @@
 document.getElementById("referralSystemContainer").style.display = "none";
 document.getElementById("loanManagerContainer").style.display = "none";
+document.getElementById("repayLoanContainer").style.display = "none";
 
 // Helper function for UI updates
 async function updateUI(elementId, content) {
@@ -92,6 +93,7 @@ async function updateRepayLoanUI() {
         updateUI("MyrepayLoan", "No active loan found");
         return;
       }
+      document.getElementById("repayLoanContainer").style.display = "block";
       const remainingDebtScaled = loan.totalOwed.sub(loan.repaidAmount);
       
       const loanDecimals = await getDecimals(loan.loanToken);

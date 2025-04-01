@@ -65,6 +65,99 @@ async function handleGetReferralEvent() {
     }
 }
 
+async function updateBalances() {
+    try {
+        const [userInfo, tokenBalance] = await Promise.all([
+            DepositPool.getUserInfo(),
+            PonziToken.getBalance()
+        ]);
+
+        // Format numbers to 6 decimal places for display
+        const formatBalance = (value) => {
+            const formatted = ethers.utils.formatEther(value);
+            // Trim to 6 decimal places
+            const decimalIndex = formatted.indexOf('.');
+            if (decimalIndex !== -1) {
+                return formatted.substring(0, decimalIndex + 7);
+            }
+            return formatted;
+        };
+
+        updateUI("tokenBalance", formatBalance(tokenBalance));
+        updateUI("depositedBalance", formatBalance(userInfo.principal));
+        updateUI("earnedInterest", formatBalance(userInfo.earnedInterest));
+        updateUI("withdrawableAmount", formatBalance(userInfo.withdrawableAmount));
+        
+    } catch (error) {
+        console.error("Balance update error:", error);
+        updateUI("depositStatus", `Error updating balances: ${error.message}`);
+    }
+}
+
+async function handleWithdraw() {
+    const amountInput = document.getElementById("withdrawAmount").value;
+    try {
+        if (!amountInput || isNaN(amountInput)) {
+            throw new Error("Invalid amount");
+        }
+
+        updateUI("withdrawStatus", "Checking withdrawable balance...");
+        const userInfo = await DepositPool.getUserInfo();
+        const withdrawableEth = ethers.utils.formatEther(userInfo.withdrawableAmount);
+        
+        if (parseFloat(amountInput) > parseFloat(withdrawableEth)) {
+            throw new Error(`Cannot withdraw more than ${withdrawableEth} PONZI`);
+        }
+
+        updateUI("withdrawStatus", "Withdrawing...");
+        const withdrawTx = await DepositPool.withdraw(amountInput);
+        const receipt = await withdrawTx.wait();
+        
+        if (receipt.status === 1) {
+            updateUI("withdrawStatus", "✅ Withdrawal successful! Updating balances...");
+            await updateBalances();
+        } else {
+            throw new Error("Transaction failed");
+        }
+        
+    } catch (error) {
+        console.error("Withdraw failed:", error);
+        updateUI("withdrawStatus", `❌ ${error.reason || error.message}`);
+    }
+}
+
+async function handleDeposit() {
+    const amountInput = document.getElementById("depositAmount").value;
+    try {
+        if (!amountInput || isNaN(amountInput)) {
+            throw new Error("Invalid amount");
+        }
+
+        updateUI("depositStatus", "Checking balance...");
+        const balance = await PonziToken.getBalance();
+        const balanceEth = ethers.utils.formatEther(balance);
+        
+        if (parseFloat(amountInput) > parseFloat(balanceEth)) {
+            throw new Error(`Insufficient balance. You have ${balanceEth} PONZI`);
+        }
+
+        updateUI("depositStatus", "Approving tokens...");
+        const approveTx = await PonziToken.approve(DEPOSIT_POOL_ADDRESS, amountInput);
+        await approveTx.wait();
+        
+        updateUI("depositStatus", "Depositing...");
+        const depositTx = await DepositPool.deposit(amountInput);
+        await depositTx.wait();
+        
+        updateUI("depositStatus", "✅ Deposit successful! Updating balances...");
+        await updateBalances();
+        
+    } catch (error) {
+        console.error("Deposit failed:", error);
+        updateUI("depositStatus", `❌ ${error.reason || error.message}`);
+    }
+}
+
 async function handleCreateLoan() {
     try {
         const collateralToken = document.getElementById("collateralToken").value;
@@ -216,7 +309,8 @@ async function handleLiquidateLoan(borrowerAddress) {
     document.getElementById("getMyReferralEvent").addEventListener("click", handleGetReferralEvent);
     document.getElementById("createLoan").addEventListener("click", handleCreateLoan);
     document.getElementById("repayLoan").addEventListener("click", handleRepayLoan);
-   
+    document.getElementById("depositBtn").addEventListener("click", handleDeposit);
+    document.getElementById("withdrawBtn").addEventListener("click", handleWithdraw);
     updateRepayLoanUI();
     handleCreateLiquidLoan();
   }

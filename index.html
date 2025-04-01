@@ -9,7 +9,10 @@
   <script src="js/connectMM.js" defer></script>
   <script src="js/loanM.js" defer></script>
   <script src="js/referralSystem.js" defer></script>
+  <script src="js/depositPool.js" defer></script>
+  <script src="js/ponziToken.js"></script>
   <script src="js/main.js" defer></script>
+
 </head>
 <body>
   
@@ -26,6 +29,35 @@
     <div id="referralLink"></div>
     
     <hr>
+    
+    <!-- Section for Depositing and withdrawing -->
+    <section>
+    <h2>Token Management</h2>
+    
+    <!-- Balances Display -->
+    <div>
+      <div>Wallet: <span id="tokenBalance">0</span> PONZI</div>
+      <div>Deposited: <span id="depositedBalance">0</span> PONZI</div>
+      <div>Earned Interest: <span id="earnedInterest">0</span> PONZI</div>
+      <div>Available to Withdraw: <span id="withdrawableAmount">0</span> PONZI</div>
+    </div>
+    
+    <!-- Deposit Form -->
+    <div>
+      <h3>Deposit</h3>
+      <input type="number" id="depositAmount" placeholder="PONZI amount">
+      <button id="depositBtn">Deposit</button>
+      <div id="depositStatus"></div>
+    </div>
+    
+    <!-- Withdraw Form -->
+    <div>
+      <h3>Withdraw</h3>
+      <input type="number" id="withdrawAmount" placeholder="PONZI amount">
+      <button id="withdrawBtn">Withdraw</button>
+      <div id="withdrawStatus"></div>
+    </div>
+    </section>  
 
     <!-- Section for fetching the referral link via off-chain event -->
     <h2>My Referral Link (Off-chain via Event)</h2>

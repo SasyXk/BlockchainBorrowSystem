@@ -55,7 +55,13 @@
       top: 0;
       z-index: 100;
     }
-    
+    .word-wrap-address {
+      word-break: break-word;
+      overflow-wrap: break-word;
+      white-space: normal;
+      display: block;
+      width: 100%;
+    }
     .menu-btn {
       background: none;
       border: none;
@@ -206,11 +212,15 @@
 </head>
 <body>
   <header>
-    <button class="menu-btn" id="menuToggle">
-      <i class="fas fa-bars"></i>
-    </button>
-    <h1>PONZI Platform</h1>
-    <div></div>
+    <div style="flex: 1;">
+      <button class="menu-btn hidden" id="menuToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  
+    <h1 style="text-align: center;">PONZI Platform</h1>
+  
+    <div style="flex: 1;"></div>
   </header>
 
   <div class="sidebar" id="sidebar">
@@ -220,14 +230,14 @@
       <button id="generateReferral" class="btn btn-primary">
         <i class="fas fa-link"></i> Generate Referral Link
       </button>
-      <div id="referralLink" class="status hidden"></div>
+      <div id="referralLink" class="status hidden word-wrap-address"></div>
     </div>
 
     <div class="input-group">
       <button id="getMyReferralEvent" class="btn btn-primary">
-        <i class="fas fa-calendar-check"></i> Get My Referral via Event
+        <i class="fas fa-calendar-check"></i> Get My Referral
       </button>
-      <div id="myReferralEvent" class="status hidden"></div>
+      <div id="myReferralEvent" class="status hidden word-wrap-address"></div>
     </div>
 
     <div class="input-group">
@@ -236,21 +246,21 @@
       <button id="registerReferral" class="btn btn-primary">
         <i class="fas fa-user-plus"></i> Register
       </button>
-      <div id="registrationStatus" class="status hidden"></div>
+      <div id="registrationStatus" class="status hidden word-wrap-address"></div>
     </div>
 
     <div class="input-group">
       <button id="getMyReferrer" class="btn btn-primary">
         <i class="fas fa-user-tag"></i> Get My Referrer
       </button>
-      <div id="myReferrer" class="status hidden"></div>
+      <div id="myReferrer" class="status hidden word-wrap-address"></div>
     </div>
 
     <div class="input-group">
       <button id="getMyReferrals" class="btn btn-primary">
         <i class="fas fa-users"></i> View My Referrals
       </button>
-      <div id="myReferrals" class="status hidden"></div>
+      <div id="myReferrals" class="status hidden word-wrap-address"></div>
     </div>
   </div>
   
@@ -419,6 +429,8 @@
       // Hide connect screen and show dashboard
       connectScreen.classList.add('hidden');
       dashboardScreen.classList.remove('hidden');
+      document.getElementById('menuToggle').classList.remove('hidden');
+      document.getElementById('sidebar').classList.remove('hidden');
 
       // Display wallet address
       document.getElementById('walletAddressMainText').textContent = walletAddress;

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Referral System Client</title>
+  <!-- Include ethers.js from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+  <!-- Link to the app.js file -->
+  <script src="js/connectMM.js" defer></script>
+  <script src="js/loanM.js" defer></script>
+  <script src="js/referralSystem.js" defer></script>
+  <script src="js/depositPool.js" defer></script>
+  <script src="js/ponziToken.js"></script>
+  <script src="js/main.js" defer></script>
+
+</head>
+<body>
+  
+  <!-- Button to connect wallet -->
+  <h1>Wallet</h1>
+  <button id="connectWallet">Connect Wallet</button>
+  <div id="walletAddress"></div>
+  <div id="referralSystemContainer">
+    
+    <hr>
+    
+    <!-- Section for Depositing and withdrawing -->
+    <section>
+    <h2>Token Management</h2>
+    
+    <!-- Balances Display -->
+    <div>
+      <div>Wallet: <span id="tokenBalance">0</span> PONZI</div>
+      <div>Deposited: <span id="depositedBalance">0</span> PONZI</div>
+      <div>Earned Interest: <span id="earnedInterest">0</span> PONZI</div>
+      <div>Available to Withdraw: <span id="withdrawableAmount">0</span> PONZI</div>
+    </div>
+    
+    <!-- Deposit Form -->
+    <div>
+      <h3>Deposit</h3>
+      <input type="number" id="depositAmount" placeholder="PONZI amount">
+      <button id="depositBtn">Deposit</button>
+      <div id="depositStatus"></div>
+    </div>
+    
+    <!-- Withdraw Form -->
+    <div>
+      <h3>Withdraw</h3>
+      <input type="number" id="withdrawAmount" placeholder="PONZI amount">
+      <button id="withdrawBtn">Withdraw</button>
+      <div id="withdrawStatus"></div>
+    </div>
+    </section>  
+
+
+    <hr>
+    <h1>Referral System Client</h1>
+    <!-- Section for generating referral link -->
+    <h2>Generate Referral Link</h2>
+    <button id="generateReferral">Generate Referral Link</button>
+    <div id="referralLink"></div>
+
+    <hr>
+    
+    <!-- Section for fetching the referral link via off-chain event -->
+    <h2>My Referral Link (Off-chain via Event)</h2>
+    <button id="getMyReferralEvent">Get My Referral via Event</button>
+    <div id="myReferralEvent"></div>
+
+    <hr>
+
+    <!-- Section for registering with a referral -->
+    <h2>Register with Referral</h2>
+    <input type="text" id="referralUUID" placeholder="Enter Referral UUID (0x...)">
+    <button id="registerReferral">Register with Referral</button>
+    <div id="registrationStatus"></div>
+    
+    <hr>
+
+    <!-- Section to view the referrer (the referral the user used to register) -->
+    <h2>My Referrer</h2>
+    <button id="getMyReferrer">Get My Referrer</button>
+    <div id="myReferrer"></div>
+    
+    <hr>
+
+    <!-- Section to view all referrals (all users that registered using the current user's referral link) -->
+    <h2>My Referrals</h2>
+    <button id="getMyReferrals">Get My Referrals</button>
+    <div id="myReferrals"></div>
+  </div>
+  <!-- Section to create Loan -->
+  
+  <div id="loanManagerContainer">
+    <hr><hr><hr>
+    <h2>Create Loan</h2>
+      <input type="text" id="collateralTokenDisplay" placeholder="ETH" readonly> 
+      <input type="hidden" id="collateralToken" value="0xE2FaF21D7F0CDAc37EB296B8a4B8246aa46C6f58"></input>
+      <input type="text" id="amountCollateralToken" placeholder="How much token you can use how collateral?">
+      <br></br>
+      <input type="label" id="loanTokenDisplay" placeholder="USDT" readonly>
+      <input type="hidden" id="loanToken" value="0x99c1960C59f005339BBbba168BCdC2ccaF2054b0"> 
+      <input type="text" id="amountLoanToken" placeholder="How much token you want?">
+      <br></br>
+      <button id="createLoan">Borrow</button>
+    <div id="myCreateLoan"></div>
+
+    <hr>
+
+    <!-- Section to repay Loan -->
+    <h2>Repay Loan</h2>
+    <div id="repayLoanContainer">
+      <div>
+        <label for="collateralTokenDisplayR">Collateral Token:</label>
+        <input type="text" id="collateralTokenDisplayR" placeholder="ETH" readonly>
+        <input type="hidden" id="collateralTokenR" value="0xE2FaF21D7F0CDAc37EB296B8a4B8246aa46C6f58">
+      </div>
+      
+      <!-- Loan token section -->
+      <div>
+        <label for="loanTokenDisplayR">Loan Token:</label>
+        <input type="text" id="loanTokenDisplayR" placeholder="USDT" readonly>
+        <input type="hidden" id="loanTokenR" value="0x99c1960C59f005339BBbba168BCdC2ccaF2054b0">
+      </div>
+      
+      <!-- Section to display the remaining debt -->
+      <div>
+        <p id="remainingDebtDisplay">Remaining Debt: --</p>
+      </div>
+      
+    <!-- Slider section to choose the amount to be refunded -->
+      <div>
+        <label for="repaySlider">Select repayment amount:</label>
+        <input type="range" id="repaySlider" min="0.01" max="100" step="0.01">
+        <span id="repayValue">0.01</span>
+      </div>
+      
+      <!-- Button to send Repay -->
+      <div>
+        <button id="repayLoan">Repay</button>
+      </div>
+    </div>
+      <div id="MyrepayLoan"></div>
+
+    <hr>
+    <!-- Section to Liquid Loan -->
+    <h2>Liquid Loan</h2>
+    <div id="liquidLoanContainer">
+
+    </div>
+
+  </div>
+</body>
+
+
+</html>

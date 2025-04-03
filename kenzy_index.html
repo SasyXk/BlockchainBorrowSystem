@@ -407,16 +407,30 @@
     document.getElementById('loanTokenDisplay').value = 'USDT';
 
     // Wallet connection handler (simplified example)
-    connectWalletBtn.addEventListener('click', () => {
-      // In a real app, this would connect to MetaMask or other wallet
+    connectWalletBtn.addEventListener('click', async () => {
+  if (typeof window.ethereum !== 'undefined') {
+    try {
+      // Request access to MetaMask accounts
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      const signer = provider.getSigner();
+      const walletAddress = await signer.getAddress();
+
+      // Hide connect screen and show dashboard
       connectScreen.classList.add('hidden');
       dashboardScreen.classList.remove('hidden');
-      
-      // Update wallet address display (example)
-      const walletAddress = '0x123...abc';
+
+      // Display wallet address
       document.getElementById('walletAddressMainText').textContent = walletAddress;
       document.getElementById('walletAddressMain').classList.remove('hidden');
-    });
+
+    } catch (error) {
+      console.error("User rejected connection or error occurred:", error);
+    }
+  } else {
+    alert("Please install MetaMask!");
+  }
+});
   </script>
 </body>
 </html>
